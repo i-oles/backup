@@ -7,7 +7,9 @@ import pathlib
 
 folder_name = 'your_folder_name'
 
+# backup folder path on your desktop
 backup_dir_path = os.path.join(expanduser("~"), 'Desktop', folder_name)
+# source folder path on your pendrive
 source_dir_path = os.path.join(pathlib.Path.cwd(), folder_name)
 
 all_source_files = []
