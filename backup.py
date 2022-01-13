@@ -30,7 +30,7 @@ def validate_path_and_backup_file(src_path, dst_path):
 
 
 def main():
-    """main function for back"""
+    """main function for backup"""
     if os.path.exists(BACKUP_DIR_PATH):
         for src_path in parse_all_src_paths():
             src_path_obj = pathlib.Path(src_path)
