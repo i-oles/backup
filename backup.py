@@ -1,39 +1,54 @@
+"""System modules"""
 import os
 import time
-from os.path import expanduser, getmtime
+import sys
+from os.path import expanduser
 import shutil
-import glob
 import pathlib
 
-folder_name = 'your_folder_name'
+FOLDER_NAME = 'oles'
 
 # backup folder path on your desktop
-backup_dir_path = os.path.join(expanduser("~"), 'Desktop', folder_name)
+BACKUP_DIR_PATH = os.path.join(expanduser("~"), 'Desktop', FOLDER_NAME)
 # source folder path on your pendrive
-source_dir_path = os.path.join(pathlib.Path.cwd(), folder_name)
+SOURCE_DIR_PATH = os.path.join(pathlib.Path.cwd(), FOLDER_NAME)
 
-all_source_files = []
 
-if os.path.exists(backup_dir_path):
-    for path, subdirs, files in os.walk(source_dir_path):
+def parse_all_src_paths():
+    """getting all source file paths"""
+    all_src_files = []
+    for path, subdirs, files in os.walk(SOURCE_DIR_PATH): #pylint: disable=unused-variable
         for name in files:
-            all_source_files.append(os.path.join(path, name))
+            all_src_files.append(os.path.join(path, name))
+    return all_src_files
 
-    for source_file in all_source_files:
-        source_path = pathlib.Path(source_file)
-        index = source_path.parts.index(folder_name)
-        backup_file = pathlib.Path(os.path.join(expanduser("~"), 'Desktop', *source_path.parts[index:]))
 
-        if not os.path.exists(backup_file):
-            os.makedirs(os.path.dirname(backup_file), exist_ok=True)
-            shutil.copy(source_file, backup_file)
-            print(f'new file created: {source_file}')
-        else:
-            source_file_date = time.ctime(os.path.getmtime(source_file))
-            backup_file_date = time.ctime(os.path.getmtime(backup_file))
-            if source_file_date > backup_file_date:
-                os.makedirs(os.path.dirname(backup_file), exist_ok=True)
-                shutil.copy(source_file, backup_file)
-                print(f'updated file: {source_file}')
-else:
-    shutil.copytree(source_dir_path, backup_dir_path)
+def validate_path_and_backup_file(src_path, dst_path):
+    """creating all necessary dirs from destination path and backup file"""
+    os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+    shutil.copy(src_path, dst_path)
+
+
+def main():
+    """main function for back"""
+    if os.path.exists(BACKUP_DIR_PATH):
+        for src_path in parse_all_src_paths():
+            src_path_obj = pathlib.Path(src_path)
+            dir_index = src_path_obj.parts.index(FOLDER_NAME)
+            backup_path = pathlib.Path(os.path.join(expanduser("~"), 'Desktop', *src_path_obj.parts[dir_index:]))# pylint: disable=line-too-long
+
+            if not os.path.exists(backup_path):
+                validate_path_and_backup_file(src_path, backup_path)
+                print(f'new file created: {backup_path}')
+            else:
+                src_file_date = time.ctime(os.path.getmtime(src_path))
+                backup_file_date = time.ctime(os.path.getmtime(backup_path))
+                if src_file_date > backup_file_date:
+                    validate_path_and_backup_file(src_path, backup_path)
+                    print(f'updated file: {backup_path}')
+    else:
+        shutil.copytree(SOURCE_DIR_PATH, BACKUP_DIR_PATH)
+
+
+if __name__ == '__main__':
+    sys.exit(main())
