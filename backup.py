@@ -6,7 +6,7 @@ from os.path import expanduser
 import shutil
 import pathlib
 
-FOLDER_NAME = 'oles'
+FOLDER_NAME = 'your_folder_name'
 
 # backup folder path on your desktop
 BACKUP_DIR_PATH = os.path.join(expanduser("~"), 'Desktop', FOLDER_NAME)
